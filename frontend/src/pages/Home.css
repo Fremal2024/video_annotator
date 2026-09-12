@@ -1,0 +1,57 @@
+/* src/pages/Home.css */
+.home-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+}
+
+/* --- Upload Section --- */
+.upload-box {
+  background-color: #132F4C; /* Lighter blue so it's visible against the dark background */
+  border: 2px dashed #3399FF; /* Bright blue dashed border */
+  border-radius: 8px;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.file-name {
+  color: #B2BAC2; /* Light grey text */
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* --- Video Placeholder Section --- */
+.video-placeholder {
+  background-color: #132F4C;
+  border-radius: 8px;
+  padding: 4rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #1E3A5F;
+}
+
+.placeholder-icon {
+  font-size: 3.5rem;
+  color: #B2BAC2;
+  margin-bottom: 1rem;
+}
+
+.placeholder-text {
+  color: #B2BAC2;
+  font-size: 1.1rem;
+  margin: 0;
+}
