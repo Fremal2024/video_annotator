@@ -2,7 +2,9 @@ import axios from 'axios';
 import { authService } from './auth';
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: process.env.REACT_APP_API_URL
+    ? `${process.env.REACT_APP_API_URL}/api`
+    : '/api',
 });
 
 // Attach the JWT to every request
