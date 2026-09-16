@@ -101,48 +101,48 @@ git clone https://github.com/Fremal2024/video_annotator.git
 cd video_annotator
 ```
 
-.............Backend Setup...............
-# Create and activate virtual environment
+# Backend Setup
+1. Create and activate virtual environment
 python -m venv venv
 
-# On Windows:
+2. On Windows:
 venv\Scripts\activate
-# On macOS/Linux:
+3. On macOS/Linux:
 source venv/bin/activate
 
-# Install dependencies
+4. Install dependencies
 pip install -r requirements.txt
 
-# Create your .env file
+5. Create your .env file
 Create a file named .env in the project root (same folder as manage.py):
 --GEMINI_API_KEY=your_gemini_api_key_here
 --DEBUG=True
 --SECRET_KEY=any-random-string-for-dev
 
-# Run migrations
+6. Run migrations
 python manage.py migrate
 
-# Create a superuser
+7. Create a superuser
 python manage.py createsuperuser
 
-# Start the backend
+8. Start the backend
 python manage.py runserver
 
-...........Frontend setup.........
-cd frontend
-npm install
-npm start
+# Frontend setup
+- cd frontend
+- npm install
+- npm start
 
-...........Create media folders..........
+## Create media folders
 In the project root:
---mkdir media
---mkdir media\videos
---mkdir media\thumbnails
+- mkdir media
+- mkdir media\videos
+- mkdir media\thumbnails
 
-..........Test the app...........
+# Test the app
 Open http://localhost:3000, register an account, upload a video, and click Annotate.
 
-......Project Structure........
+# Project Structure
 
 video_annotator/
 ├── api/                          # Django app — models, views, serializers
@@ -179,7 +179,7 @@ video_annotator/
 ├── manage.py
 └── .env                          # Environment variables (gitignored)
 
-.......API Endpoints........
+# API Endpoints
 Method	Endpoint	Description
 POST	/api/auth/register/	Create a new user
 POST	/api/auth/login/	Obtain JWT token
@@ -193,62 +193,59 @@ POST	/api/videos/{id}/update_clip/	Update a clip
 POST	/api/videos/{id}/delete_clip/	Delete a clip
 POST	/api/videos/{id}/auto_annotate/	Trigger AI annotation
 
-..........Deployment...........
-This app is deployed on Render using a Blueprint (render.yaml).
-Services:
-Backend: Django + Gunicorn (Python web service)
+# Deployment
+- This app is deployed on Render using a Blueprint (render.yaml).
+## Services
+- Backend: Django + Gunicorn (Python web service)
+- Frontend: React static site
+- Database: PostgreSQL (free tier)
 
-Frontend: React static site
-
-Database: PostgreSQL (free tier)
-
-Deployment steps:
-
+## Deployment steps
 1. Push code to GitHub
 2. In Render dashboard: New+ → Blueprint → select repo
 3. Render reads render.yaml and provisions all three services
 4. Set GEMINI_API_KEY when prompted
 5. Done
 
-..........Testing.......
+# Testing
 1. Backend
->>>> python manage.py test
+- python manage.py test
 
 2. Frontend
->>>> cd frontend
->>>> npm test
+- cd frontend
+- npm test
 
-........Known Limitations..........
-> Free tier sleep: Render spins down services after 15 minutes of inactivity
-> No persistent disk on free tier: Uploaded videos are deleted on every redeploy
-> Free PostgreSQL expires after 30 days on Render
-> Scene detection threshold is fixed — future versions could make this configurable
-> AI descriptions are in English only
+# Known Limitations
+- Free tier sleep: Render spins down services after 15 minutes of inactivity
+- No persistent disk on free tier: Uploaded videos are deleted on every redeploy
+- Free PostgreSQL expires after 30 days on Render
+- Scene detection threshold is fixed — future versions could make this configurable
+- AI descriptions are in English only
 
-.......Future Improvements.......
-□ AWS S3 integration for persistent media storage
-□ Export annotations as SRT or JSON
-□ Search and filter across clips
-□ User collaboration (multiple annotators per video)
-□ Custom scene detection sensitivity slider
-□ Support for more AI providers (OpenAI, Anthropic, local models)
-□ Progress streaming via WebSockets
-□ Mobile-responsive improvements
-□ Dark/light theme toggle
-□ Multi-language AI descriptions
+# Future Improvements
+- AWS S3 integration for persistent media storage
+- Export annotations as SRT or JSON
+- Search and filter across clips
+- User collaboration (multiple annotators per video)
+- Custom scene detection sensitivity slider
+- Support for more AI providers (OpenAI, Anthropic, local models)
+- Progress streaming via WebSockets
+- Mobile-responsive improvements
+- Dark/light theme toggle
+- Multi-language AI descriptions
 
-..........License.........
+# License
 This project is open source and available under the MIT License.
 
-.......Author........
-> Fred Muthoka
-> GitHub: @Fremal2024
-> Email: muthokafred804@gmail.com
+# Author
+- Fred Muthoka
+- GitHub: @Fremal2024
+- Email: muthokafred804@gmail.com
 
-..........Acknowledgments.........
-> Django REST Framework for the excellent API toolkit
-> Material-UI for the polished component library
-> Google AI Studio for the free Gemini API tier
-> Render for the free full-stack hosting
+# Acknowledgments
+- Django REST Framework for the excellent API toolkit
+- Material-UI for the polished component library
+- Google AI Studio for the free Gemini API tier
+- Render for the free full-stack hosting
 > OpenCV for video processing capabilities
 
