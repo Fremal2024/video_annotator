@@ -143,41 +143,54 @@ In the project root:
 Open http://localhost:3000, register an account, upload a video, and click Annotate.
 
 # Project Structure
-
 video_annotator/
-├── api/                          # Django app — models, views, serializers
-│   ├── models.py                 # Video, AnnotationClip
-│   ├── serializers.py            # DRF serializers
-│   ├── views.py                  # VideoViewSet with custom actions
-│   ├── urls.py                   # Router configuration
-│   └── auth_views.py             # Register, login, current_user
-├── video_annotation/             # Django project settings
+│
+├── api/                              # Django app — models, views, serializers
+│   ├── models.py                     # Video, AnnotationClip
+│   ├── serializers.py                # DRF serializers
+│   ├── views.py                      # VideoViewSet with custom actions
+│   ├── urls.py                       # Router configuration
+│   └── auth_views.py                 # Register, login, current_user
+│
+├── video_annotation/                 # Django project settings
 │   ├── settings.py
-│   └── urls.py
-├── video_processor/              # Video processing logic
-│   └── ai_annotator.py           # Scene detection + Gemini integration
-├── frontend/                     # React application
+│   ├── urls.py
+│   └── wsgi.py
+│
+├── video_processor/                  # Video processing logic
+│   └── ai_annotator.py               # Scene detection + Gemini integration
+│
+├── frontend/                         # React application
+│   ├── public/
+│   │   └── index.html
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── VideoUpload.js
-│   │   │   └── VideoAnnotator.js
+│   │   │   ├── VideoUpload.js        # File picker + upload progress
+│   │   │   └── VideoAnnotator.js     # Player + clip editor + AI trigger
 │   │   ├── pages/
-│   │   │   ├── Home.js
-│   │   │   ├── Login.js
-│   │   │   ├── Register.js
-│   │   │   └── VideoDetail.js
+│   │   │   ├── Home.js               # Video list + upload
+│   │   │   ├── Login.js              # Login form
+│   │   │   ├── Register.js           # Registration form
+│   │   │   └── VideoDetail.js        # Annotator wrapper page
 │   │   ├── services/
-│   │   │   ├── api.js
-│   │   │   └── auth.js
-│   │   ├── App.js
-│   │   └── ErrorBoundary.js
+│   │   │   ├── api.js                # Axios instance + videoService
+│   │   │   └── auth.js               # JWT auth service
+│   │   ├── App.js                    # Routing + theme + navbar
+│   │   └── ErrorBoundary.js          # Catches render errors
 │   └── package.json
-├── media/                        # Uploaded videos (gitignored)
-├── build.sh                      # Render build script
-├── render.yaml                   # Render Blueprint
-├── requirements.txt
-├── manage.py
-└── .env                          # Environment variables (gitignored)
+│
+├── media/                            # Uploaded videos (gitignored)
+│   ├── videos/
+│   └── thumbnails/
+│
+├── build.sh                          # Render build script
+├── render.yaml                       # Render Blueprint (3 services)
+├── requirements.txt                  # Python dependencies
+├── manage.py                         # Django management entry point
+├── .env                              # Environment variables (gitignored)
+├── .gitignore
+└── README.md
+
 
 # API Endpoints
 | Method | Endpoint | Description |
