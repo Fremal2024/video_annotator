@@ -263,5 +263,5 @@ This project is open source and available under the MIT License.
 - Material-UI for the polished component library
 - Google AI Studio for the free Gemini API tier
 - Render for the free full-stack hosting
-> OpenCV for video processing capabilities
+- OpenCV for video processing capabilities
 
