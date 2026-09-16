@@ -143,6 +143,7 @@ In the project root:
 Open http://localhost:3000, register an account, upload a video, and click Annotate.
 
 # Project Structure
+```
 video_annotator/
 │
 ├── api/                              # Django app — models, views, serializers
@@ -190,6 +191,7 @@ video_annotator/
 ├── .env                              # Environment variables (gitignored)
 ├── .gitignore
 └── README.md
+```
 
 
 # API Endpoints
