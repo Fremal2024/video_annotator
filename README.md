@@ -180,18 +180,18 @@ video_annotator/
 └── .env                          # Environment variables (gitignored)
 
 # API Endpoints
-Method	Endpoint	Description
-POST	/api/auth/register/	Create a new user
-POST	/api/auth/login/	Obtain JWT token
-GET	/api/auth/me/	Get current user
-GET	/api/videos/	List user's videos
-POST	/api/videos/	Upload a new video
-GET	/api/videos/{id}/	Get video with clips
-DELETE	/api/videos/{id}/	Delete video
-POST	/api/videos/{id}/add_clip/	Add manual clip
-POST	/api/videos/{id}/update_clip/	Update a clip
-POST	/api/videos/{id}/delete_clip/	Delete a clip
-POST	/api/videos/{id}/auto_annotate/	Trigger AI annotation
+Method|	Endpoint|	Description
+POST|	/api/auth/register/|	Create a new user
+POST|	/api/auth/login/|	Obtain JWT token
+GET|	/api/auth/me/|	Get current user
+GET|	/api/videos/|	List user's videos
+POST|	/api/videos/|	Upload a new video
+GET|	/api/videos/{id}/|	Get video with clips
+DELETE|	/api/videos/{id}/|	Delete video
+POST|	/api/videos/{id}/add_clip/|	Add manual clip
+POST|	/api/videos/{id}/update_clip/|	Update a clip
+POST|	/api/videos/{id}/delete_clip/|	Delete a clip
+POST|	/api/videos/{id}/auto_annotate/|	Trigger AI annotation
 
 # Deployment
 - This app is deployed on Render using a Blueprint (render.yaml).
