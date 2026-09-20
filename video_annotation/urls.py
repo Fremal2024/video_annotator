@@ -1,18 +1,24 @@
-"""
-URL configuration for video_annotation project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.1/topics/http/urls/
-"""
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.static import serve as media_serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
 ]
 
+# Serve uploaded media files in BOTH development and production.
+# NOTE: This is fine for an app on Render's free tier,
+urlpatterns += [
+    re_path(
+        r'^media/(?P<path>.*)$',
+        media_serve,
+        {'document_root': settings.MEDIA_ROOT},
+    ),
+]
+
+# Serve static files in development only
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

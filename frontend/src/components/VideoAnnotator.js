@@ -14,18 +14,26 @@ import SmartToyIcon from '@mui/icons-material/SmartToy';
 import { videoService } from '../services/api';
 
 // Convert any file URL (relative or absolute) into a path that
-// the CRA proxy will forward to Django — avoids CORS on media files.
+// the CRA proxy will forward to Django to avoid CORS on media files.
 const buildFileUrl = (file) => {
   if (!file) return '';
-  try {
-    if (file.startsWith('http')) {
-      const u = new URL(file);
-      return u.pathname; // "/media/videos/xyz.mp4"
-    }
-  } catch {
-    // ignore malformed URLs
+  const backend = process.env.REACT_APP_API_URL || '';
+  
+  // Django typically returns a full URL like:
+  //   https://backend.onrender.com/media/videos/xyz.mp4
+  // or a path like:
+  //   /media/videos/xyz.mp4
+  
+  if (file.startsWith('http')) {
+    if (backend) return file;
+    try { return new URL(file).pathname; } catch { return file; }
   }
-  return file.startsWith('/') ? file : `/${file}`;
+  
+  // Relative path: prepend backend in production
+  if (backend) {
+    return `${backend}${file.startsWith('/') ? '' : '/'}${file}`;
+  }
+  return file;
 };
 
 const fmt = (s) => {
