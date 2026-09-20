@@ -1,10 +1,14 @@
 import axios from 'axios';
 
-const API_URL = '/api';
+const BASE = process.env.REACT_APP_API_URL || '';
+const API_URL = `${BASE}/api`;
 
 export const authService = {
   login: async (username, password) => {
-    const response = await axios.post(`${API_URL}/auth/login/`, { username, password });
+    const response = await axios.post(`${API_URL}/auth/login/`, {
+      username,
+      password,
+    });
     if (response.data.access) {
       localStorage.setItem('access_token', response.data.access);
       localStorage.setItem('refresh_token', response.data.refresh);
@@ -14,7 +18,9 @@ export const authService = {
 
   register: async (username, email, password) => {
     const response = await axios.post(`${API_URL}/auth/register/`, {
-      username, email, password,
+      username,
+      email,
+      password,
     });
     return response.data;
   },
