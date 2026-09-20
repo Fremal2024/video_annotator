@@ -5,8 +5,9 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import { authService } from './services/auth';
 import VideoDetail from './pages/VideoDetail';
+import Landing from './pages/Landing';
+import { authService } from './services/auth';
 
 const darkBlueTheme = createTheme({
   palette: {
@@ -23,29 +24,59 @@ const darkBlueTheme = createTheme({
       main: '#3399FF',
     },
   },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+  },
 });
 
 function Navbar({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
   return (
-    <AppBar position="sticky" elevation={1} sx={{ bgcolor: 'background.paper' }}>
+    <AppBar
+      position="sticky"
+      elevation={0}
+      sx={{
+        bgcolor: 'background.paper',
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+      }}
+    >
       <Toolbar>
         <Typography
           variant="h6"
           component={Link}
-          to="/"
-          sx={{ flexGrow: 1, textDecoration: 'none', color: 'inherit', fontWeight: 600 }}
+          to={isLoggedIn ? '/dashboard' : '/'}
+          sx={{
+            flexGrow: 1,
+            textDecoration: 'none',
+            color: 'inherit',
+            fontWeight: 700,
+          }}
         >
           🎬 Video Annotator
         </Typography>
         {isLoggedIn ? (
-          <Button color="inherit" onClick={onLogout} startIcon={<LogoutIcon />}>
-            Logout
-          </Button>
+          <>
+            <Button color="inherit" onClick={() => navigate('/dashboard')}>
+              Dashboard
+            </Button>
+            <Button color="inherit" onClick={onLogout} startIcon={<LogoutIcon />}>
+              Logout
+            </Button>
+          </>
         ) : (
           <Box>
-            <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
-            <Button color="inherit" onClick={() => navigate('/register')}>Register</Button>
+            <Button color="inherit" onClick={() => navigate('/login')}>
+              Login
+            </Button>
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={() => navigate('/register')}
+              sx={{ ml: 1, textTransform: 'none' }}
+            >
+              Get started
+            </Button>
           </Box>
         )}
       </Toolbar>
@@ -63,7 +94,7 @@ function App() {
   const handleLogout = () => {
     authService.logout();
     setIsLoggedIn(false);
-    window.location.href = '/login';
+    window.location.href = '/';
   };
 
   return (
@@ -72,16 +103,25 @@ function App() {
       <Router>
         <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
         <Routes>
+          {/* Public landing page */}
+          <Route
+            path="/"
+            element={isLoggedIn ? <Navigate to="/dashboard" /> : <Landing />}
+          />
+
+          {/* Auth pages */}
           <Route
             path="/login"
-            element={isLoggedIn ? <Navigate to="/" /> : <Login onLogin={() => setIsLoggedIn(true)} />}
+            element={isLoggedIn ? <Navigate to="/dashboard" /> : <Login onLogin={() => setIsLoggedIn(true)} />}
           />
           <Route
             path="/register"
-            element={isLoggedIn ? <Navigate to="/" /> : <Register />}
+            element={isLoggedIn ? <Navigate to="/dashboard" /> : <Register />}
           />
+
+          {/* Protected app pages */}
           <Route
-            path="/"
+            path="/dashboard"
             element={isLoggedIn ? <Home /> : <Navigate to="/login" />}
           />
           <Route
