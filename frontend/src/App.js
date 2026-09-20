@@ -1,88 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom';
-import { AppBar, Toolbar, Typography, Button, Box, createTheme, ThemeProvider, CssBaseline } from '@mui/material';
-import LogoutIcon from '@mui/icons-material/Logout';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { createTheme, ThemeProvider, CssBaseline } from '@mui/material';
+import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import VideoDetail from './pages/VideoDetail';
 import Landing from './pages/Landing';
+import Pricing from './pages/Pricing';
+import Settings from './pages/Settings';
+import Profile from './pages/Profile';
+import Referral from './pages/Referral';
 import { authService } from './services/auth';
 
 const darkBlueTheme = createTheme({
   palette: {
     mode: 'dark',
-    background: {
-      default: '#0A1929',
-      paper: '#132F4C',
-    },
-    text: {
-      primary: '#ffffff',
-      secondary: '#B2BAC2',
-    },
-    primary: {
-      main: '#3399FF',
-    },
+    background: { default: '#0A1929', paper: '#132F4C' },
+    text: { primary: '#ffffff', secondary: '#B2BAC2' },
+    primary: { main: '#3399FF' },
   },
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
   },
+  shape: { borderRadius: 10 },
 });
-
-function Navbar({ isLoggedIn, onLogout }) {
-  const navigate = useNavigate();
-  return (
-    <AppBar
-      position="sticky"
-      elevation={0}
-      sx={{
-        bgcolor: 'background.paper',
-        borderBottom: '1px solid',
-        borderColor: 'divider',
-      }}
-    >
-      <Toolbar>
-        <Typography
-          variant="h6"
-          component={Link}
-          to={isLoggedIn ? '/dashboard' : '/'}
-          sx={{
-            flexGrow: 1,
-            textDecoration: 'none',
-            color: 'inherit',
-            fontWeight: 700,
-          }}
-        >
-          🎬 Video Annotator
-        </Typography>
-        {isLoggedIn ? (
-          <>
-            <Button color="inherit" onClick={() => navigate('/dashboard')}>
-              Dashboard
-            </Button>
-            <Button color="inherit" onClick={onLogout} startIcon={<LogoutIcon />}>
-              Logout
-            </Button>
-          </>
-        ) : (
-          <Box>
-            <Button color="inherit" onClick={() => navigate('/login')}>
-              Login
-            </Button>
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={() => navigate('/register')}
-              sx={{ ml: 1, textTransform: 'none' }}
-            >
-              Get started
-            </Button>
-          </Box>
-        )}
-      </Toolbar>
-    </AppBar>
-  );
-}
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(authService.isLoggedIn());
@@ -103,13 +45,14 @@ function App() {
       <Router>
         <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
         <Routes>
-          {/* Public landing page */}
+          {/* Public */}
           <Route
             path="/"
             element={isLoggedIn ? <Navigate to="/dashboard" /> : <Landing />}
           />
+          <Route path="/pricing" element={<Pricing />} />
 
-          {/* Auth pages */}
+          {/* Auth */}
           <Route
             path="/login"
             element={isLoggedIn ? <Navigate to="/dashboard" /> : <Login onLogin={() => setIsLoggedIn(true)} />}
@@ -119,15 +62,12 @@ function App() {
             element={isLoggedIn ? <Navigate to="/dashboard" /> : <Register />}
           />
 
-          {/* Protected app pages */}
-          <Route
-            path="/dashboard"
-            element={isLoggedIn ? <Home /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/videos/:id"
-            element={isLoggedIn ? <VideoDetail /> : <Navigate to="/login" />}
-          />
+          {/* Protected */}
+          <Route path="/dashboard" element={isLoggedIn ? <Home /> : <Navigate to="/login" />} />
+          <Route path="/videos/:id" element={isLoggedIn ? <VideoDetail /> : <Navigate to="/login" />} />
+          <Route path="/profile"   element={isLoggedIn ? <Profile />   : <Navigate to="/login" />} />
+          <Route path="/settings"  element={isLoggedIn ? <Settings />  : <Navigate to="/login" />} />
+          <Route path="/referral"  element={isLoggedIn ? <Referral />  : <Navigate to="/login" />} />
         </Routes>
       </Router>
     </ThemeProvider>
