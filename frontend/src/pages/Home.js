@@ -108,6 +108,8 @@ const Home = () => {
     }
   };
 
+  const userPlan = (planInfo?.plan || 'free').toLowerCase();
+
   // -------- Render --------
   return (
     <div className="home-container">
@@ -143,15 +145,15 @@ const Home = () => {
           }}
         >
           <span style={{ color: '#B2BAC2' }}>
-            Plan: <strong style={{ color: '#3399FF' }}>{planInfo.plan.toUpperCase()}</strong>
+            Plan: <strong style={{ color: '#3399FF' }}>{userPlan.toUpperCase()}</strong>
           </span>
           <span style={{ color: '#B2BAC2' }}>
             · Videos this month:{' '}
             <strong style={{ color: '#fff' }}>
-              {planInfo.plan === 'free' ? '5' : '∞'} allowed
+              {userPlan === 'free' ? '5' : '∞'} allowed
             </strong>
           </span>
-          {planInfo.plan === 'free' && (
+          {userPlan === 'free' && (
             <button
               onClick={() => navigate('/pricing')}
               style={{
