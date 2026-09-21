@@ -47,30 +47,33 @@ const Profile = () => {
   };
 
   const handleSave = async () => {
-    setSaving(true);
-    setError('');
-    setSuccess('');
-    try {
-      const formData = new FormData();
-      if (profile.first_name) formData.append('first_name', profile.first_name);
-      if (profile.last_name) formData.append('last_name', profile.last_name);
-      if (profile.email) formData.append('email', profile.email);
-      if (profile.phone) formData.append('phone', profile.phone);
-      if (profile.country) formData.append('country', profile.country);
-      if (profile.dob) formData.append('dob', profile.dob);
-      if (profile.bio) formData.append('bio', profile.bio);
-      if (avatarFile) formData.append('avatar', avatarFile);
+  setSaving(true);
+  setError('');
+  setSuccess('');
+  try {
+    const formData = new FormData();
+    if (profile.first_name) formData.append('first_name', profile.first_name);
+    if (profile.last_name) formData.append('last_name', profile.last_name);
+    if (profile.email) formData.append('email', profile.email);
+    if (profile.phone) formData.append('phone', profile.phone);
+    if (profile.country) formData.append('country', profile.country);
+    if (profile.dob) formData.append('dob', profile.dob);
+    if (profile.bio) formData.append('bio', profile.bio);
+    if (avatarFile) formData.append('avatar', avatarFile);
 
-      const r = await videoService.updateProfile(formData);
-      setProfile(r.data);
-      setAvatarFile(null);
-      setSuccess('Profile saved successfully');
-    } catch (err) {
-      setError(err.response?.data?.error || 'Could not save profile');
-    } finally {
-      setSaving(false);
-    }
-  };
+    const r = await videoService.updateProfile(formData);
+    setProfile(r.data);
+    setAvatarFile(null);
+    setSuccess('Profile saved successfully');
+
+    // Tell the Navbar to refresh its avatar
+    window.dispatchEvent(new Event('profile-updated'));
+  } catch (err) {
+    setError(err.response?.data?.error || 'Could not save profile');
+  } finally {
+    setSaving(false);
+  }
+};
 
   if (loading) {
     return (
@@ -114,7 +117,9 @@ const Profile = () => {
                 fontSize: 48,
               }}
             >
-              {profile?.username?.[0]?.toUpperCase() || 'U'}
+              {profile?.first_name?.[0]?.toUpperCase() ||
+              profile?.username?.[0]?.toUpperCase() ||
+              '?'}
             </Avatar>
             <input
               type="file"

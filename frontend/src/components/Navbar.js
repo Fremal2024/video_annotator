@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   AppBar, Toolbar, Typography, Button, Box, IconButton,
@@ -11,9 +11,9 @@ import {
   CardGiftcard as ReferralIcon,
   AttachMoney as PricingIcon,
   Dashboard as DashboardIcon,
-  Menu as MenuIcon,
 } from '@mui/icons-material';
 import { authService } from '../services/auth';
+import { videoService } from '../services/api';
 
 const NAV_LINKS_PUBLIC = [
   { label: 'How it works', to: '/#how' },
@@ -30,21 +30,63 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [profile, setProfile] = useState(null);
   const open = Boolean(anchorEl);
 
   const handleAvatarClick = (e) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
+  // ------------------------------------------------------------------
+  // Load profile so we can show the real avatar in the top-right
+  // ------------------------------------------------------------------
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setProfile(null);
+      return;
+    }
+    let active = true;
+    videoService
+      .getProfile()
+      .then((r) => {
+        if (active) setProfile(r.data);
+      })
+      .catch(() => {});
+
+    // Refresh avatar whenever another page dispatches this event
+    const refresh = () => {
+      videoService.getProfile().then((r) => active && setProfile(r.data)).catch(() => {});
+    };
+    window.addEventListener('profile-updated', refresh);
+
+    return () => {
+      active = false;
+      window.removeEventListener('profile-updated', refresh);
+    };
+  }, [isLoggedIn]);
+
+  // ------------------------------------------------------------------
+  // Avatar fallback logic — same as the Profile page
+  // ------------------------------------------------------------------
+  const getInitial = () => {
+    if (profile?.first_name) return profile.first_name[0].toUpperCase();
+    if (profile?.username) return profile.username[0].toUpperCase();
+    return '?';
+  };
+
   const go = (path) => {
     handleClose();
     if (path.startsWith('/#')) {
-      navigate('/');
-      // Let the browser scroll after render
-      setTimeout(() => {
-        const id = path.replace('/#', '');
+      const id = path.replace('/#', '');
+      if (location.pathname === '/') {
         const el = document.getElementById(id);
         if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      } else {
+        navigate('/');
+        setTimeout(() => {
+          const el = document.getElementById(id);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 150);
+      }
     } else {
       navigate(path);
     }
@@ -60,11 +102,9 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
         bgcolor: 'background.paper',
         borderBottom: '1px solid',
         borderColor: 'divider',
-        backdropFilter: 'blur(8px)',
       }}
     >
       <Toolbar sx={{ gap: 2 }}>
-        {/* Logo */}
         <Typography
           variant="h6"
           component={Link}
@@ -79,7 +119,6 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
           🎬 Video Annotator
         </Typography>
 
-        {/* Center nav links */}
         <Stack
           direction="row"
           spacing={1}
@@ -104,11 +143,11 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
           })}
         </Stack>
 
-        {/* Right side */}
         {isLoggedIn ? (
           <>
             <IconButton onClick={handleAvatarClick} size="small">
               <Avatar
+                src={profile?.avatar_url || undefined}
                 sx={{
                   width: 36,
                   height: 36,
@@ -117,7 +156,7 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
                   fontWeight: 700,
                 }}
               >
-                {authService.getToken() ? 'U' : '?'}
+                {getInitial()}
               </Avatar>
             </IconButton>
             <Menu
@@ -142,11 +181,11 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
               </MenuItem>
               <MenuItem onClick={() => go('/referral')}>
                 <ListItemIcon><ReferralIcon fontSize="small" /></ListItemIcon>
-                Refer & earn
+                Refer &amp; earn
               </MenuItem>
               <MenuItem onClick={() => go('/pricing')}>
                 <ListItemIcon><PricingIcon fontSize="small" /></ListItemIcon>
-                Plans & pricing
+                Plans &amp; pricing
               </MenuItem>
               <Divider />
               <MenuItem onClick={() => { handleClose(); onLogout(); }}>
@@ -157,10 +196,7 @@ const Navbar = ({ isLoggedIn, onLogout }) => {
           </>
         ) : (
           <>
-            <Button
-              onClick={() => navigate('/login')}
-              sx={{ textTransform: 'none' }}
-            >
+            <Button onClick={() => navigate('/login')} sx={{ textTransform: 'none' }}>
               Sign in
             </Button>
             <Button
