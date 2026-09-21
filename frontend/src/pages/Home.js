@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { videoService } from '../services/api';
 import './Home.css';
-import { useLocation } from 'react-router-dom';
-// ...
-const location = useLocation();
-const upgraded = new URLSearchParams(location.search).get('upgraded') === '1';
 
 const Home = () => {
+  // -------- Hooks --------
   const navigate = useNavigate();
+  const location = useLocation();
+  const upgraded = new URLSearchParams(location.search).get('upgraded') === '1';
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -21,10 +20,13 @@ const Home = () => {
 
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [planInfo, setPlanInfo] = useState(null);
 
-  // Load videos on mount
+  // -------- Load videos + profile on mount --------
   useEffect(() => {
     loadVideos();
+    loadProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadVideos = async () => {
@@ -40,6 +42,16 @@ const Home = () => {
     }
   };
 
+  const loadProfile = async () => {
+    try {
+      const r = await videoService.getProfile();
+      setPlanInfo(r.data);
+    } catch (err) {
+      // silently fail — usage meter just won't show
+    }
+  };
+
+  // -------- Upload handlers --------
   const handleFileChange = (e) => {
     const f = e.target.files[0];
     if (f) {
@@ -67,19 +79,20 @@ const Home = () => {
           setProgress(Math.round((evt.loaded * 100) / evt.total));
         }
       });
-      setSuccess(`Uploaded: ${response.data.title}`);
+      setSuccess(`✅ Uploaded: ${response.data.title}`);
       setVideos([response.data, ...videos]);
       setSelectedFile(null);
       setProgress(0);
+      loadProfile(); // refresh usage meter
       const input = document.getElementById('raised-button-file');
       if (input) input.value = '';
     } catch (err) {
       console.error(err);
-      setError(
+      const msg =
         err.response?.data?.detail ||
         err.response?.data?.error ||
-        'Upload failed. Make sure you are logged in.'
-      );
+        'Upload failed. Make sure you are logged in.';
+      setError(msg);
     } finally {
       setUploading(false);
     }
@@ -94,23 +107,71 @@ const Home = () => {
       alert('Failed to delete video.');
     }
   };
-  {upgraded && (
-    <div style={{
-      padding: '12px 16px',
-      marginBottom: 16,
-      background: '#1b5e20',
-      borderRadius: 8,
-      color: 'white',
-    }}>
-      <strong>Upgrade successful!</strong> You now have unlimited uploads.
-    </div>
-  )}
 
+  // -------- Render --------
   return (
     <div className="home-container">
+      {upgraded && (
+        <div
+          style={{
+            padding: '12px 16px',
+            marginBottom: 16,
+            background: '#1b5e20',
+            borderRadius: 8,
+            color: 'white',
+          }}
+        >
+          ✅ <strong>Upgrade successful!</strong> You now have unlimited uploads.
+        </div>
+      )}
+
       <h1 className="page-title">Upload New Video</h1>
 
-      {/* ------------------- Upload box ------------------- */}
+      {/* Usage meter */}
+      {planInfo && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            marginBottom: 16,
+            padding: '10px 16px',
+            background: '#0d2137',
+            border: '1px solid #1e3a5f',
+            borderRadius: 8,
+            fontSize: '0.9rem',
+          }}
+        >
+          <span style={{ color: '#B2BAC2' }}>
+            Plan: <strong style={{ color: '#3399FF' }}>{planInfo.plan.toUpperCase()}</strong>
+          </span>
+          <span style={{ color: '#B2BAC2' }}>
+            · Videos this month:{' '}
+            <strong style={{ color: '#fff' }}>
+              {planInfo.plan === 'free' ? '5' : '∞'} allowed
+            </strong>
+          </span>
+          {planInfo.plan === 'free' && (
+            <button
+              onClick={() => navigate('/pricing')}
+              style={{
+                marginLeft: 'auto',
+                padding: '6px 14px',
+                background: '#3399FF',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 6,
+                cursor: 'pointer',
+                fontWeight: 600,
+              }}
+            >
+              Upgrade
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Upload box */}
       <div className="upload-box">
         <input
           accept="video/*"
@@ -190,7 +251,7 @@ const Home = () => {
         {success && <p style={{ color: '#4caf50', margin: 0 }}>{success}</p>}
       </div>
 
-      {/* ------------------- Video list ------------------- */}
+      {/* Video list */}
       <h1 className="page-title">Your Videos</h1>
 
       {loading ? (
@@ -225,7 +286,6 @@ const Home = () => {
                 position: 'relative',
               }}
             >
-              {/* Delete button (top right) */}
               <button
                 onClick={() => handleDelete(v.id)}
                 title="Delete video"
@@ -256,7 +316,9 @@ const Home = () => {
                 {v.title}
               </h3>
 
-              <div style={{ display: 'flex', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
+              <div
+                style={{ display: 'flex', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}
+              >
                 <span
                   style={{
                     fontSize: '0.75rem',
