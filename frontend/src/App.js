@@ -12,6 +12,7 @@ import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 import Referral from './pages/Referral';
 import { authService } from './services/auth';
+import Checkout from './pages/Checkout';
 
 const darkBlueTheme = createTheme({
   palette: {
@@ -61,7 +62,10 @@ function App() {
             path="/register"
             element={isLoggedIn ? <Navigate to="/dashboard" /> : <Register />}
           />
-
+          <Route
+            path="/checkout"
+            element={isLoggedIn ? <Checkout /> : <Navigate to="/login" />}
+          />
           {/* Protected */}
           <Route path="/dashboard" element={isLoggedIn ? <Home /> : <Navigate to="/login" />} />
           <Route path="/videos/:id" element={isLoggedIn ? <VideoDetail /> : <Navigate to="/login" />} />

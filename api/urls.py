@@ -6,6 +6,8 @@ from .views import (
     profile_view,
     change_password_view,
     delete_account_view,
+    upgrade_plan_view,
+    cancel_plan_view,
 )
 from . import auth_views
 
@@ -18,9 +20,9 @@ urlpatterns = router.urls + [
     path('auth/login/', TokenObtainPairView.as_view(), name='login'),
     path('auth/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/me/', auth_views.current_user, name='current_user'),
-
-    # Profile
     path('profile/', profile_view, name='profile'),
     path('profile/change-password/', change_password_view, name='change_password'),
     path('profile/delete/', delete_account_view, name='delete_account'),
+    path('profile/upgrade/', upgrade_plan_view, name='upgrade_plan'),
+    path('profile/cancel/', cancel_plan_view, name='cancel_plan'),
 ]

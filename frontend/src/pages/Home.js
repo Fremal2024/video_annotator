@@ -5,6 +5,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { videoService } from '../services/api';
 import './Home.css';
+import { useLocation } from 'react-router-dom';
+// ...
+const location = useLocation();
+const upgraded = new URLSearchParams(location.search).get('upgraded') === '1';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -90,6 +94,17 @@ const Home = () => {
       alert('Failed to delete video.');
     }
   };
+  {upgraded && (
+    <div style={{
+      padding: '12px 16px',
+      marginBottom: 16,
+      background: '#1b5e20',
+      borderRadius: 8,
+      color: 'white',
+    }}>
+      <strong>Upgrade successful!</strong> You now have unlimited uploads.
+    </div>
+  )}
 
   return (
     <div className="home-container">

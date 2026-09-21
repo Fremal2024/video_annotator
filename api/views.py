@@ -18,6 +18,12 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.contrib.auth import update_session_auth_hash
 from .models import UserProfile
 from .serializers import UserProfileSerializer, ChangePasswordSerializer
+from rest_framework.exceptions import APIException
+
+class PlanLimitExceeded(APIException):
+    status_code = 402
+    default_detail = 'Plan limit reached.'
+    default_code = 'plan_limit_exceeded'
 
 class VideoViewSet(viewsets.ModelViewSet):
     """
