@@ -12,7 +12,12 @@ from .serializers import (
     VideoDetailSerializer,
     AnnotationClipSerializer,
 )
-
+from rest_framework.decorators import api_view, permission_classes, parser_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from django.contrib.auth import update_session_auth_hash
+from .models import UserProfile
+from .serializers import UserProfileSerializer, ChangePasswordSerializer
 
 class VideoViewSet(viewsets.ModelViewSet):
     """
@@ -301,3 +306,55 @@ class VideoViewSet(viewsets.ModelViewSet):
                 {'error': f'AI annotation failed: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+# ======================================================================
+# Profile endpoints
+# ======================================================================
+
+@api_view(['GET', 'PATCH'])
+@permission_classes([IsAuthenticated])
+@parser_classes([MultiPartParser, FormParser, JSONParser])
+def profile_view(request):
+    """Get or update the current user's profile."""
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'GET':
+        serializer = UserProfileSerializer(profile)
+        return Response(serializer.data)
+
+    # PATCH
+    serializer = UserProfileSerializer(profile, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password_view(request):
+    """Change the current user's password."""
+    serializer = ChangePasswordSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    user = request.user
+    if not user.check_password(serializer.validated_data['old_password']):
+        return Response(
+            {'error': 'Current password is incorrect'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    user.set_password(serializer.validated_data['new_password'])
+    user.save()
+    update_session_auth_hash(request, user)
+    return Response({'status': 'password changed'})
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_account_view(request):
+    """Permanently delete the current user's account."""
+    user = request.user
+    user.delete()
+    return Response({'status': 'account deleted'})

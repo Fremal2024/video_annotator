@@ -30,7 +30,7 @@ const Landing = () => {
       >
         <Container maxWidth="md">
           <Chip
-            label="✨ Powered by Google Gemini"
+            label="Powered by Google Gemini"
             color="primary"
             variant="outlined"
             sx={{ mb: 3 }}
