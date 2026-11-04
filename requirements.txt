@@ -56,7 +56,7 @@ tqdm==4.70.1
 truststore==0.10.4
 typing-inspection==0.4.4
 typing_extensions==4.16.0
-tzdata==2026.3
+tzdata==2026.6
 uritemplate==4.2.0
 urllib3==2.7.0
 websockets==16.1.1
