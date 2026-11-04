@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react';
-import App from './App';
+import Navbar from './components/Navbar';
 
-test('renders without crashing', () => {
-  render(<App />);
+test('renders the app logo in the navbar', () => {
+  render(<Navbar isLoggedIn={false} onLogout={() => {}} />);
+  const logoElement = screen.getByText(/Video Annotator/i);
+  expect(logoElement).toBeInTheDocument();
 });
