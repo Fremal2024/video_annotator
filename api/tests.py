@@ -4,7 +4,10 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APIClient
 from unittest.mock import patch
 from .models import Video, UserProfile, AnnotationClip
+from django.test import override_settings
 
+@override_settings(DEFAULT_FILE_STORAGE='django.core.files.storage.FileSystemStorage')
+class VideoAPITestCase(TestCase):
 class VideoAPITestCase(TestCase):
     def setUp(self):
         # Create a test user
