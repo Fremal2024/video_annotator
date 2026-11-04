@@ -1,0 +1,30 @@
+version: 2
+updates:
+  # Backend (Python)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    ignore:
+      # Ignore major Django updates (e.g., Django 6 -> 7) to prevent breaking changes
+      - dependency-name: "django"
+        update-types: ["version-update:semver-major"]
+
+  # Frontend (Node.js)
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    ignore:
+      # Ignore major React updates (e.g., React 19 -> 20) 
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      # Ignore major MUI updates
+      - dependency-name: "@mui/material"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@mui/icons-material"
+        update-types: ["version-update:semver-major"]
