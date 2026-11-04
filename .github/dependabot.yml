@@ -7,7 +7,6 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 5
     ignore:
-      # Ignore major Django updates (e.g., Django 6 -> 7) to prevent breaking changes
       - dependency-name: "django"
         update-types: ["version-update:semver-major"]
 
@@ -18,13 +17,16 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 5
     ignore:
-      # Ignore major React updates (e.g., React 19 -> 20) 
       - dependency-name: "react"
         update-types: ["version-update:semver-major"]
       - dependency-name: "react-dom"
         update-types: ["version-update:semver-major"]
-      # Ignore major MUI updates
       - dependency-name: "@mui/material"
         update-types: ["version-update:semver-major"]
       - dependency-name: "@mui/icons-material"
+        update-types: ["version-update:semver-major"]
+      # ADD THESE TWO LINES to stop the failing PRs:
+      - dependency-name: "react-router-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-router"
         update-types: ["version-update:semver-major"]
