@@ -1,13 +1,11 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework.test import APIClient
 from unittest.mock import patch
 from .models import Video, UserProfile, AnnotationClip
-from django.test import override_settings
 
 @override_settings(DEFAULT_FILE_STORAGE='django.core.files.storage.FileSystemStorage')
-class VideoAPITestCase(TestCase):
 class VideoAPITestCase(TestCase):
     def setUp(self):
         # Create a test user
@@ -31,10 +29,9 @@ class VideoAPITestCase(TestCase):
         response = self.client.post('/api/videos/', {'title': 'Test', 'file': self.dummy_video})
         self.assertEqual(response.status_code, 401)
 
-    @patch('cv2.VideoCapture') # Mock OpenCV so it doesn't try to read the dummy file
+    @patch('cv2.VideoCapture')
     def test_create_video(self, mock_cv2):
         """Test that an authenticated user can upload a video."""
-        # Fake the OpenCV duration extraction
         mock_cv2.return_value.get.side_effect = [25.0, 250.0] 
         
         response = self.client.post('/api/videos/', {
@@ -51,24 +48,21 @@ class VideoAPITestCase(TestCase):
         """Test that a free user cannot upload more than 5 videos."""
         mock_cv2.return_value.get.side_effect = [25.0, 250.0] 
         
-        # Create 5 videos (the free limit)
         for i in range(5):
             Video.objects.create(user=self.user, title=f'Vid {i}')
         
-        # Try to upload a 6th
         response = self.client.post('/api/videos/', {
             'title': 'Vid 6',
             'file': self.dummy_video
         }, format='multipart')
         
-        self.assertEqual(response.status_code, 402) # Payment Required
+        self.assertEqual(response.status_code, 402) 
         self.assertEqual(Video.objects.count(), 5)
 
     def test_add_and_delete_clip(self):
         """Test adding and deleting an annotation clip."""
         video = Video.objects.create(user=self.user, title='Test Vid')
         
-        # Add a clip
         response = self.client.post(f'/api/videos/{video.id}/add_clip/', {
             'start_time': 0.0,
             'end_time': 10.5,
@@ -79,23 +73,20 @@ class VideoAPITestCase(TestCase):
         
         clip_id = response.data['id']
         
-        # Delete the clip
         response = self.client.post(f'/api/videos/{video.id}/delete_clip/', {
             'clip_id': clip_id
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(video.clips.count(), 0)
 
-    @patch('os.path.exists', return_value=True) # Mock the file check
+    @patch('os.path.exists', return_value=True)
     @patch('video_processor.ai_annotator.AIAnnotator.annotate')
     def test_auto_annotate_endpoint(self, mock_annotate, mock_exists):
         """Test the AI auto-annotate endpoint (mocking the Gemini AI)."""
-        # Fake the AI response
         mock_annotate.return_value = [
             {'start_time': 0.0, 'end_time': 10.0, 'description': 'AI Scene 1', 'confidence_score': 0.9}
         ]
         
-        # Create the video WITH the dummy file
         video = Video.objects.create(
             user=self.user, 
             title='Test Vid', 
