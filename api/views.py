@@ -1,5 +1,6 @@
 import cv2
 import os
+import logging
 from datetime import timedelta
 
 from django.contrib.auth.models import User
@@ -22,6 +23,8 @@ from .serializers import (
     UserProfileSerializer,
     ChangePasswordSerializer,
 )
+
+logger = logging.getLogger(__name__)
 
 
 # ======================================================================
@@ -112,7 +115,7 @@ class VideoViewSet(viewsets.ModelViewSet):
                     video.duration = int(frame_count / fps)
                 cap.release()
         except Exception as e:
-            print(f"[VideoViewSet] Could not extract duration: {e}")
+            logger.error(f"Could not extract duration: {e}", exc_info=True)
 
         video.status = 'completed'
         video.save()
@@ -287,7 +290,7 @@ class VideoViewSet(viewsets.ModelViewSet):
         except Exception as e:
             video.status = 'failed'
             video.save()
-            print(f"[auto_annotate] Error: {e}")
+            logger.error(f"AI annotation failed: {e}", exc_info=True)
             return Response({'error': f'AI annotation failed: {str(e)}'},
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

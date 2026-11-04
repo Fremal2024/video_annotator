@@ -4,6 +4,9 @@ from django.conf import settings
 
 from google import genai
 from google.genai import types
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class AIAnnotator:
@@ -159,7 +162,7 @@ class AIAnnotator:
             return text.strip()
 
         except Exception as e:
-            print(f"[AIAnnotator] Gemini error at {time_seconds}s: {e}")
+            logger.error(f"Gemini error at {time_seconds}s: {e}", exc_info=True)
             return f"Scene at {int(time_seconds)}s (description unavailable)"
 
     # ------------------------------------------------------------------
@@ -173,9 +176,9 @@ class AIAnnotator:
         3. Describe each frame with Gemini
         4. Return list of clip dicts
         """
-        print(f"[AIAnnotator] Detecting scenes in {video_path}")
+        logger.info(f"Detecting scenes in {video_path}")
         scenes = self._detect_scenes(video_path)
-        print(f"[AIAnnotator] Found {len(scenes)} scenes")
+        logger.info(f"Found {len(scenes)} scenes")
 
         clips = []
         for start, end in scenes:
