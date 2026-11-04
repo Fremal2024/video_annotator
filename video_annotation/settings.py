@@ -79,23 +79,20 @@ TEMPLATES = [
 WSGI_APPLICATION = 'video_annotation.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/6.1/ref/settings/#databases
-
 DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3')
 
 if DATABASE_URL.startswith('sqlite'):
-    # Local development — SQLite doesn't support ssl_require
     DATABASES = {
         'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
     }
 else:
-    # Production — PostgreSQL on Render
+    # Render requires SSL for its Postgres DB, but GitHub Actions' local DB does not.
+    is_local = 'localhost' in DATABASE_URL or '127.0.0.1' in DATABASE_URL
     DATABASES = {
         'default': dj_database_url.parse(
             DATABASE_URL,
             conn_max_age=600,
-            ssl_require=True,
+            ssl_require=not is_local
         )
     }
 
@@ -190,3 +187,17 @@ CLOUDINARY_STORAGE = {
 
 # Use Cloudinary as the default storage for uploaded files (media only)
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
