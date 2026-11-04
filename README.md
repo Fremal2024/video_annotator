@@ -1,5 +1,7 @@
 #  Video Annotator
 
+[![Full Stack CI](https://github.com/Fremal2024/video_annotator/actions/workflows/ci.yml/badge.svg)](https://github.com/Fremal2024/video_annotator/actions/workflows/ci.yml)
+
 An AI-powered web application that automatically analyzes uploaded videos, detects scene changes, and generates descriptive annotations for each segment using Google's Gemini vision model.
 
 **Live Demo:** [video-annotator-frontend-g766.onrender.com](https://video-annotator-frontend-g766.onrender.com/)
